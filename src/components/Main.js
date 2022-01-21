@@ -8,7 +8,7 @@ export default function Main() {
     const [signer, setSigner] =  useState(null);
     const [totalElections, setTotalElections] = useState([]);
     const provider =  new ethers.providers.Web3Provider(window.ethereum);
-    const contractAddress = "0x391Ebcbce118DA713F2B295257fe969B87000ff7";
+    const contractAddress = "0x1b5d4115F90D552697f9C63D0cEace5832a70d61";
     const [contract, setContract] = useState(new ethers.Contract(contractAddress, contractJson.abi, provider))
     const [show, setShow] = useState(false);
     const [selectedElection, setSelectedElection] = useState("");
@@ -64,6 +64,7 @@ export default function Main() {
 
             arr.push(
                  {
+                    "electionId": i,
                     "electionName": electionAux.electionName,
                     "electionStart":electionAux.electionStart.toString(),
                     "endingTime":electionAux.endingTime.toString(),
@@ -78,7 +79,6 @@ export default function Main() {
         
          setTotalElections(arr);
         
-        console.log(totalElections) 
 
     }
 
@@ -99,12 +99,47 @@ export default function Main() {
                alert(e.error.message)
            }
          
-       
+           getElectionCandidates(selectedIndex);
     }
+    const getElectionCandidates = async (electionId) => {
+        let fullCandidateList = [];
+        let candidates = await contract.getCandidatesInElection(electionId);   
+        for (let i = 0; i < candidates.length; i++) {
+            let fullCandidate = await contract.candidates(candidates[i]);  
+            let candidateVotes = await contract.getCandidateVotes(candidates[i], electionId);  
+            fullCandidateList.push(
+                {
+                    "votes": candidateVotes.toString(),
+                    "address": candidates[i],
+                    "name": fullCandidate.name,
+                    "surname": fullCandidate.surname
+                }
+            ) 
+            
+        }
+            
+        
+        setSelectedCandidates(fullCandidateList);
+    }
+
     const handleElectionClick = async (election, index) => {
         setSelectedIndex(index)
         setSelectedElection(election)
+        console.log(selectedElection.electionId)
         setShow(true);
+        getElectionCandidates(index);
+    }
+    const handleCandidateVoting = async (candidate) => {
+      
+
+        try{
+            const voteTxn = await contract.voteForCandidate(candidate.address, selectedElection.electionId);
+            await voteTxn.wait();
+            console.log("voted!")
+            alert("Voted for " + candidate.name + " " + candidate.surname +" !");
+           }catch(e){
+               alert(e.error.message)
+           }
     }
     const extractDate = (dateVal) => {
         var a = new Date(dateVal * 1000)
@@ -118,94 +153,103 @@ export default function Main() {
     }
     return (
         <div className="main-container">
-            <div className="input-data-container">
-                <form className="election-creation-container" >
-                    <h3 className='fieldtext'>Start an election!</h3>
+            <div className="whole-container">
+                <div className="input-data-container">
+                    <form className="election-creation-container" onSubmit={addElection}>
+                        <h3 className='fieldtext'>Start an election!</h3>
 
-                        <label className='fieldtext'>
-                            Election name: 
+                            <label className='fieldtext'>
+                                Election name: 
+                                
+                            </label>
+                            <input type="text" name="name" className="form-control" onChange={handleChange} />
+                            <label className='fieldtext'>
+                                Election starting date:
                             
-                        </label>
-                        <input type="text" name="name" className="form-control" onChange={handleChange} />
-                        <label className='fieldtext'>
-                            Election starting date:
-                           
-                        </label>
-                        <input type="date" name="startingDate" className="form-control" onChange={handleChange} />
-                        <label className='fieldtext'>
-                            Election registration period until:
-                        </label>
-                        <input type="date" name="regPeriod" className="form-control" onChange={handleChange} />
+                            </label>
+                            <input type="date" name="startingDate" className="form-control" onChange={handleChange} />
+                            <label className='fieldtext'>
+                                Election registration period until:
+                            </label>
+                            <input type="date" name="regPeriod" className="form-control" onChange={handleChange} />
 
-                        <label className='fieldtext'>
-                            Election voting period until:
-                        </label>
-                        <input type="date" name="votPeriod" className="form-control" onChange={handleChange} />
-                     
-                        <button className="btn " onClick={addElection}>Add election</button>
-                </form> 
-                <form className="candidate-creation-container" onSubmit={signUpAsCandidate}>
-                    <h3 className='fieldtext'>Register as candidate!</h3>
+                            <label className='fieldtext'>
+                                Election voting period until:
+                            </label>
+                            <input type="date" name="votPeriod" className="form-control" onChange={handleChange} />
+                        
+                            <input value="Add election" className="btn " type='submit' />
+                    </form> 
+                    <form className="candidate-creation-container" onSubmit={signUpAsCandidate}>
+                        <h3 className='fieldtext'>Register as candidate!</h3>
 
-                        <label className='fieldtext'>
-                            Name: 
-                        </label>
-                        <input type="text" name="name" className="form-control" onChange={handleChange} />
-                        <label className='fieldtext'>
-                            Surname
-                        </label>
-                        <input type="text" name="surname" className="form-control" onChange={handleChange} />
-                        <button className='btn '>Register</button>
-                </form> 
-            </div>
-            <h3>Active elections:</h3>
+                            <label className='fieldtext'>
+                                Name: 
+                            </label>
+                            <input type="text" name="name" className="form-control" onChange={handleChange} />
+                            <label className='fieldtext'>
+                                Surname
+                            </label>
+                            <input type="text" name="surname" className="form-control" onChange={handleChange} />
+                            <button className='btn '>Register</button>
+                    </form> 
+                </div>
+                <h3>Active elections:</h3>
 
-             <div className="glass-container">
-                
-                
-                    {totalElections.map((election, index) =>(
-                
-                        <div className="card-container" onClick={()=>handleElectionClick(election, index)}>
-                            
-                            <h5>{election.electionName}</h5>
-                            <h6>Starting date: {extractDate(election.electionStart)}</h6>
-                            <h6>Registration period start: {extractDate(election.registrationPeriod)}</h6>
-                            <h6>Voting period start: {extractDate(election.votingPeriod)}</h6>
-                            <h6>Election end date: {extractDate(election.endingTime)}</h6>
-                        </div>
+                <div className="glass-container">
                     
-                    ))}
-         
-                    <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>{selectedElection.electionName}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body> 
-                        <div className="modal-container">
-                            <h6>Starting date: {extractDate(selectedElection.electionStart)}</h6>
-                            <h6>Registration period start: {extractDate(selectedElection.registrationPeriod)}</h6>
-                            <h6>Voting period start: {extractDate(selectedElection.votingPeriod)}</h6>
-                            <h6>Election end date: {extractDate(selectedElection.endingTime)}</h6>
-                            <div className="presented-candidates-container">
-                            
+                    
+                        {totalElections.map((election, index) =>(
+                    
+                            <div className="card-container" onClick={()=>handleElectionClick(election, index)}>
+                                
+                                <h5>{election.electionName}</h5>
+                                <h6>Starting date: {extractDate(election.electionStart)}</h6>
+                                <h6>Registration period start: {extractDate(election.registrationPeriod)}</h6>
+                                <h6>Voting period start: {extractDate(election.votingPeriod)}</h6>
+                                <h6>Election end date: {extractDate(election.endingTime)}</h6>
                             </div>
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                    <button className='btn'  onClick={handleClose}>
-                        Close
-                    </button>
-                    <button className='btn'  onClick={handleVote}>
-                        Vote
-                    </button> 
-                    <button className='btn'  onClick={handlePresent}>
-                        Present to election
-                    </button>
-                    </Modal.Footer>
-                </Modal>
-               
-                 
-                 
+                        
+                        ))}
+            
+                        <Modal show={show} onHide={handleClose} >
+                        <Modal.Header closeButton>
+                            <Modal.Title>{selectedElection.electionName}</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body > 
+                            <div className="modal-container">
+                                <h6>Starting date: {extractDate(selectedElection.electionStart)}</h6>
+                                <h6>Registration period start: {extractDate(selectedElection.registrationPeriod)}</h6>
+                                <h6>Voting period start: {extractDate(selectedElection.votingPeriod)}</h6>
+                                <h6>Election end date: {extractDate(selectedElection.endingTime)}</h6>
+                                <div className="presented-candidates-container">
+                                {selectedCandidates.map((candidate, index) =>(
+                    
+                                    <div className="card-container" >
+                                        <h6 className="candidate-info" >Candidate address: {candidate.address}</h6>
+                                        <h6 className="candidate-info" >Candidate name: {candidate.name}</h6>
+                                        <h6 className="candidate-info" >Candidate surname: {candidate.surname}</h6>
+                                        <h6 className="candidate-info" >Candidate votes: {candidate.votes}</h6>
+                                        <button className='btn btn-invert' onClick={()=>handleCandidateVoting(candidate)}>Vote</button>
+                                    </div>
+                                
+                                ))}
+                                </div>
+                            </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                        <button className='btn'  onClick={handleClose}>
+                            Close
+                        </button>
+                        <button className='btn'  onClick={handlePresent}>
+                            Present to election
+                        </button>
+                        </Modal.Footer>
+                    </Modal>
+                
+                    
+                    
+                </div>
             </div>
         </div>
        

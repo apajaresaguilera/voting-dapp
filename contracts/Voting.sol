@@ -23,6 +23,7 @@ contract Voting {
     }
 
     mapping(address => mapping(uint => bool))  public candidateInElection;
+    mapping(uint => address[]) public electionCandidates;
     mapping(address => bool) candidateExists;
     mapping(address => mapping(uint => uint)) candidateVotes;
     mapping(address => mapping(uint => bool)) voter;
@@ -74,6 +75,7 @@ contract Voting {
         require(block.timestamp < (elections[electionId].electionStart + elections[electionId].registrationPeriod) , "The registration period for this election is closed!");
         require(!candidateInElection[msg.sender][electionId], "Candidate already registered for this election!");
         candidateInElection[msg.sender][electionId] = true;
+        electionCandidates[electionId].push(msg.sender);
         emit CandidateAdded(msg.sender, electionId);
     }
 
@@ -87,6 +89,9 @@ contract Voting {
     }
     function getCandidateVotes(address candidateAddress, uint electionId) public view returns(uint){
         return candidateVotes[candidateAddress][electionId];
+    }
+    function getCandidatesInElection(uint electionId) public view returns(address[] memory){
+        return electionCandidates[electionId];
     }
     
 }

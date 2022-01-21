@@ -11,7 +11,7 @@
     grid-template-columns: 1fr 5fr 2fr;
     grid-template-rows: 1fr;
     grid-template-areas: "title-left title-mid title-right";
-    background-color: rgb(248, 248, 248);
+    background-color: transparent;
 }
 .btn{
     
@@ -23,6 +23,9 @@
     margin: 5px;
 }
 
+label{
+    color: black;
+}
 .btn-disable:hover{
     cursor: auto;
     color: white;
@@ -37,7 +40,7 @@
     grid-area: title-right;
 }
 body{
-    background-color: rgb(248, 248, 248);
+    background-image: url("https://fondosmil.com/fondo/1805.jpg");
     background-size: cover;
     
 }
@@ -46,12 +49,9 @@ html, body {
     height:100%;
   }
 .main-container{
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height:100vh;
+    padding: 80px;
+    height: 100vh;
+    
 }
 .glass-container {
     width: 50%;
@@ -59,11 +59,23 @@ html, body {
     padding: 100px;
     box-shadow: 0 0 1rem 0 rgba(255, 255, 255, 0.2); 
     border-radius: 5px;
-    
+    background-color: rgba(255, 255, 255, .50);  
+ backdrop-filter: blur(2px);
     background: inherit;
-    background-color: rgb(255, 255, 255);
+   
     overflow: auto;
 
+}
+
+.whole-container{
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height:100%;
+    background-color: rgba(255, 255, 255, .15);  
+ backdrop-filter: blur(2px);
 }
 .glass-container::-webkit-scrollbar {
     display: none;
@@ -71,7 +83,9 @@ html, body {
 h3{
     color: black;
 }
-
+.candidate-info{
+    color: black;
+}
 .election-creation-container, .candidate-creation-container{
     text-align: center;
     display: flex;
@@ -81,9 +95,7 @@ h3{
     
 }
 
-.fieldtext {
-    color: black;
-}
+
 .input-data-container{
     margin-top: 100px;
     display: flex;
@@ -91,11 +103,11 @@ h3{
     justify-content: space-between;
 }
 h5,h6{
-    color: white;
+    color: black;
 }
 .card-container{
     box-shadow: 0 0 1rem 0 rgba(0, 0, 0, 0.2); 
-    background-color: rgb(0, 0, 0);
+    background-color: white;
     border-radius: 25px;
     padding: 20px;
     margin-bottom: 10px;
