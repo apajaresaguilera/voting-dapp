@@ -33,15 +33,15 @@ export default function Header() {
     }, [])
     
     return (
-        <div class="headerContainer"  >
+        <div className="headerContainer"  >
         
             {account ? 
-                 <button type="button" class="btn btn-disable"  >Connected!</button>
+                 <button type="button" className="btn btn-disable"  >Connected!</button>
                 :
-                <button type="button" class="btn" onClick={connectWallet}>Connect Wallet</button>
+                <button type="button" className="btn" onClick={connectWallet}>Connect Wallet</button>
             }
-            <div class="title-mid"></div> 
-            <h3 id="dappTitle" class="title-right">The Voting DApp! 🗳️</h3>
+            <div className="title-mid"></div> 
+            <h3 id="dappTitle" className="title-right">The Voting DApp! 🗳️</h3>
                 
            
         </div>
