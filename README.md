@@ -7,5 +7,5 @@ Simple project that covers all the basic skills a Web3 developer should master:
 - Ethers.js frontend library
 - React
 
-![Voting image 1](https://ibb.co/990S9cv)
-![Voting image 2](https://ibb.co/wCfyMpJ)
+![Voting image 1](https://i.ibb.co/WWXjWG3/voting-1.png)
+![Voting image 2](https://i.ibb.co/d6RBGkb/voting-2.png)
