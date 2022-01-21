@@ -1,15 +1,11 @@
-# Basic Sample Hardhat Project
+# Decentralized Voting System
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+Basic Decentralized App that lets users create eletions, present to them and vote for other election participants!
+Simple project that covers all the basic skills a Web3 developer should master:
+- Smart Contract development and testing (S olidity + Hardhat)
+- Interaction with the blockchain
+- Ethers.js frontend library
+- React
 
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+![Voting image 1](https://ibb.co/990S9cv)
+![Voting image 2](https://ibb.co/wCfyMpJ)
